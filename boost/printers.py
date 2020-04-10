@@ -449,6 +449,29 @@ class BoostDynamicBitset:
     def display_hint(self):
         return 'array'
 
+@add_printer
+class BoostVector:
+    """Pretty Printer for boost::container::vector"""
+    printer_name = 'boost::container::vector'
+    min_supported_version = (1, 58, 0)
+    max_supported_version = last_supported_boost_version
+    template_name = 'boost::container::vector'
+
+    def init(self, value):
+        self.value = value
+
+    def to_string(self):
+        m_holder = self.value['m_holder']
+        return 'size={} capacity={}'.format(m_holder['m_size'], m_holder['m_capacity'])
+
+    def children(self):
+        m_holder = self.value['m_holder']
+        size = int(m_holder['m_size'])
+        for idx in range(size):
+            yield '[{}]'.format(idx), m_holder['m_start'][idx]
+
+    def display_hint(self):
+        return 'array'
 
 @add_printer
 class BoostUuid:
@@ -466,3 +489,4 @@ class BoostUuid:
         u = (int(self.value['data'][i]) for i in xrange(16))
         s = 'xxxx-xx-xx-xx-xxxxxx'.replace('x', '%02x') % tuple(u)
         return '(%s) %s' % (self.typename, s)
+
