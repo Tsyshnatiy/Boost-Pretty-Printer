@@ -457,18 +457,19 @@ class BoostVector:
     max_supported_version = last_supported_boost_version
     template_name = 'boost::container::vector'
 
-    def init(self, value):
+    def __init__(self, value):
         self.value = value
 
     def to_string(self):
-        m_holder = self.value['m_holder']
-        return 'size={} capacity={}'.format(m_holder['m_size'], m_holder['m_capacity'])
+        return 'size={}'.format(self.value['m_holder']['m_size'])
 
     def children(self):
-        m_holder = self.value['m_holder']
-        size = int(m_holder['m_size'])
+        element_type = self.value.type.template_argument(0)
+        data_storage = self.value['m_holder']['m_start']
+        #elements = data_storage.address.cast(element_type.pointer())
+        size = int(self.value['m_holder']['m_size'])
         for idx in range(size):
-            yield '[{}]'.format(idx), m_holder['m_start'][idx]
+            yield '[{}]'.format(idx), data_storage[idx]
 
     def display_hint(self):
         return 'array'
